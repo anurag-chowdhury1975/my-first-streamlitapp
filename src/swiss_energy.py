@@ -71,9 +71,12 @@ metric = left_column.radio(label='Metric:', options=['production','tariff','elec
 sources1 = ["All sources"]+sorted(pd.unique(df["energy_source_level_2"]))
 source1 = middle_column.selectbox(label="Select an energy source:", options=sources1)
 
-sources2 = ["All types"]+sorted(pd.unique(df["energy_source_level_3"]))
-source2 = right_column.selectbox(label="Source type:", options=sources2)
-
+if source1 == "":
+    sources2 = ["All types"]+sorted(pd.unique(df[df["energy_source_level_2"]=="Bioenergy"]["energy_source_level_3"]))
+    source2 = right_column.selectbox(label="Source type:", options=sources2)
+else:
+    right_column.text("")
+    source2 = "All types"
 
 if source1 == "All sources":
     if metric == "electrical_capacity":
