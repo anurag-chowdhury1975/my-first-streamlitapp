@@ -58,20 +58,23 @@ def map_canton_name(row):
 df['kan_name'] = df.apply(map_canton_name, axis=1)
 df.head()
 
-df_bio = df[df["energy_source_level_2"] == "Bioenergy"].groupby("kan_name").agg({'production': 'sum'}).reset_index()
-df_hydro = df[df["energy_source_level_2"] == "Hydro"].groupby("kan_name").agg({'production': 'sum'}).reset_index()
-df_solar = df[df["energy_source_level_2"] == "Solar"].groupby("kan_name").agg({'production': 'sum'}).reset_index()
-df_wind = df[df["energy_source_level_2"] == "Wind"].groupby("kan_name").agg({'production': 'sum'}).reset_index()
-
-fig = px.choropleth_mapbox(df_bio, geojson=geojson, 
-                           color="production",
-                           locations="kan_name", featureidkey="properties.kan_name",
-                           center={"lat": 47.0, "lon": 8.0},
-                           mapbox_style="carto-positron", zoom=6.5)
-fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-#fig.show()
-
 st.title("Visulaization of energy production in Switzerland")
 st.header("Energy production by Kanton")
 
-st.plotly_chart(fig)
+left_column, right_column = st.columns([1,1])
+left_column.radio(label="Include data table:", options=['Yes','No'])
+
+sources = ["Choose source"]+sorted(pd.unique(df["energy_source_level_2"]))
+source = right_column.selectbox("<b>Select an energy source</b>", sources)
+
+if source == "":
+    "Select energy source to view the visualization of energy production by Kanton"
+else:
+    df_source = df[df["energy_source_level_2"] == source].groupby("kan_name").agg({'production': 'sum'}).reset_index()
+    fig = px.choropleth_mapbox(df_source, geojson=geojson, 
+                            color="production",
+                            locations="kan_name", featureidkey="properties.kan_name",
+                            center={"lat": 47.0, "lon": 8.0},
+                            mapbox_style="carto-positron", zoom=6.5)
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+    st.plotly_chart(fig)
