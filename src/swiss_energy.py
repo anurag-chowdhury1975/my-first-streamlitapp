@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
@@ -61,16 +62,32 @@ df.head()
 st.title("Visulaization of energy production in Switzerland")
 st.header("Energy production by Kanton")
 
-left_column, right_column = st.columns([1,1])
-show_data = left_column.checkbox(label="Include data table with visual")
+show_data = st.checkbox(label="Include data table with visual")
 
-sources = ["All sources"]+sorted(pd.unique(df["energy_source_level_2"]))
-source = right_column.selectbox("Select an energy source", sources)
+left_column, middle_column, right_column = st.columns([1,1,1])
 
-if source == "All sources":
-    df_source = df.groupby("kan_name").agg({'production': 'sum'}).reset_index()
+metric = left_column.radio(label='Show Class Means', options=['production','tariff','capacity usage'])
+
+sources1 = ["All sources"]+sorted(pd.unique(df["energy_source_level_2"]))
+source1 = middle_column.selectbox(label="Select an energy source", options=sources1)
+
+sources2 = ["All types"]+sorted(pd.unique(df["energy_source_level_3"]))
+source2 = right_column.selectbox(label="Source type", options=sources2)
+
+
+if source1 == "All sources":
+    df_source = df.groupby("kan_name").agg({metric: 'sum'}).reset_index()
 else:
-    df_source = df[df["energy_source_level_2"] == source].groupby("kan_name").agg({'production': 'sum'}).reset_index()
+    if source2 == "All types":
+        if metric == "capacity usage":
+            df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").apply(lambda x: np.average(df["electrical_capacity"], weights=df['production'])).reset_index()
+        else:
+            df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").agg({metric: 'sum'}).reset_index()
+    else:
+        if metric == "capacity usage":
+            df_source = df[(df["energy_source_level_2"] == source1) & (df["energy_source_level_3"] == source2)].groupby("kan_name").apply(lambda x: np.average(df["electrical_capacity"], weights=df['production'])).reset_index()
+        else:
+            df_source = df[(df["energy_source_level_2"] == source1) & (df["energy_source_level_3"] == source2)].groupby("kan_name").agg({metric: 'sum'}).reset_index()
 
 st.subheader("Energy production map:")
 fig = px.choropleth_mapbox(df_source, geojson=geojson, 
