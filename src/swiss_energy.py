@@ -62,19 +62,25 @@ st.title("Visulaization of energy production in Switzerland")
 st.header("Energy production by Kanton")
 
 left_column, right_column = st.columns([1,1])
-left_column.radio(label="Include data table:", options=['Yes','No'])
+show_data = left_column.checkbox(label="Include data table with visual")
 
-sources = ["Choose source"]+sorted(pd.unique(df["energy_source_level_2"]))
-source = right_column.selectbox("<b>Select an energy source</b>", sources)
+sources = ["All sources"]+sorted(pd.unique(df["energy_source_level_2"]))
+source = right_column.selectbox("Select an energy source", sources)
 
-if source == "":
-    "Select energy source to view the visualization of energy production by Kanton"
+if source == "All sources":
+    df_source = df.groupby("kan_name").agg({'production': 'sum'}).reset_index()
 else:
     df_source = df[df["energy_source_level_2"] == source].groupby("kan_name").agg({'production': 'sum'}).reset_index()
-    fig = px.choropleth_mapbox(df_source, geojson=geojson, 
-                            color="production",
-                            locations="kan_name", featureidkey="properties.kan_name",
-                            center={"lat": 47.0, "lon": 8.0},
-                            mapbox_style="carto-positron", zoom=6.5)
-    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-    st.plotly_chart(fig)
+
+st.subheader("Energy production map:")
+fig = px.choropleth_mapbox(df_source, geojson=geojson, 
+                        color="production",
+                        locations="kan_name", featureidkey="properties.kan_name",
+                        center={"lat": 47.0, "lon": 8.0},
+                        mapbox_style="carto-positron", zoom=6.5)
+fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+st.plotly_chart(fig)
+
+if show_data:
+    st.subheader("Energy production data:")
+    st.dataframe(data=df_source)
