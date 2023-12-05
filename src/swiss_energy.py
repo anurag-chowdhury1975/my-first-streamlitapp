@@ -58,8 +58,8 @@ def map_canton_name(row):
 df['kan_name'] = df.apply(map_canton_name, axis=1)
 df.energy_source_level_3 = df.energy_source_level_3.fillna('')
 
-st.title("Visulaization of energy production in Switzerland")
-st.header("Energy production by Kanton")
+st.title("Energy production in Switzerland")
+st.header("Data summarized at a Kanton level")
 
 show_data = st.checkbox(label="Include data table with visual")
 
