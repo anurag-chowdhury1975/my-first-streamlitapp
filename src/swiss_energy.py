@@ -66,13 +66,13 @@ show_data = st.checkbox(label="Include data table with visual")
 
 left_column, middle_column, right_column = st.columns([1,1,1])
 
-metric = left_column.radio(label='Metric', options=['production','tariff','electrical_capacity'])
+metric = left_column.radio(label='Metric:', options=['production','tariff','electrical_capacity'])
 
 sources1 = ["All sources"]+sorted(pd.unique(df["energy_source_level_2"]))
-source1 = middle_column.selectbox(label="Select an energy source", options=sources1)
+source1 = middle_column.selectbox(label="Select an energy source:", options=sources1)
 
 sources2 = ["All types"]+sorted(pd.unique(df["energy_source_level_3"]))
-source2 = right_column.selectbox(label="Source type", options=sources2)
+source2 = right_column.selectbox(label="Source type:", options=sources2)
 
 
 if source1 == "All sources":
