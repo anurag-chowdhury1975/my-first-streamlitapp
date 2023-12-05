@@ -66,7 +66,7 @@ show_data = st.checkbox(label="Include data table with visual")
 
 left_column, middle_column, right_column = st.columns([1,1,1])
 
-metric = left_column.radio(label='Show Class Means', options=['production','tariff','electrical_capacity'])
+metric = left_column.radio(label='Metric', options=['production','tariff','electrical_capacity'])
 
 sources1 = ["All sources"]+sorted(pd.unique(df["energy_source_level_2"]))
 source1 = middle_column.selectbox(label="Select an energy source", options=sources1)
@@ -79,17 +79,17 @@ if source1 == "All sources":
     df_source = df.groupby("kan_name").agg({metric: 'sum'}).reset_index()
 elif source1 == "Bioenergy":
     if source2 == "All types":
-        if metric == "capacity usage":
+        if metric == "electrical_capacity":
             df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").apply(lambda x: np.average(x.electrical_capacity, weights=x.production)).reset_index().rename(columns={0: "electrical_capacity"})
         else:
             df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").agg({metric: 'sum'}).reset_index()
     else:
-        if metric == "capacity usage":
+        if metric == "electrical_capacity":
             df_source = df[(df["energy_source_level_2"] == source1) & (df["energy_source_level_3"] == source2)].groupby("kan_name").apply(lambda x: np.average(x.electrical_capacity, weights=x.production)).reset_index().rename(columns={0: "electrical_capacity"})
         else:
             df_source = df[(df["energy_source_level_2"] == source1) & (df["energy_source_level_3"] == source2)].groupby("kan_name").agg({metric: 'sum'}).reset_index()
 else:
-    if metric == "capacity usage":
+    if metric == "electrical_capacity":
         df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").apply(lambda x: np.average(x.electrical_capacity, weights=x.production)).reset_index().rename(columns={0: "electrical_capacity"})
     else:
         df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").agg({metric: 'sum'}).reset_index()
