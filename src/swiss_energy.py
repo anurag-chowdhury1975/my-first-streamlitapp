@@ -80,17 +80,17 @@ if source1 == "All sources":
 elif source1 == "Bioenergy":
     if source2 == "All types":
         if metric == "capacity usage":
-            df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").apply(lambda x: np.average(df["electrical_capacity"], weights=df['production'])).reset_index()
+            df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").apply(lambda x: np.average(x.electrical_capacity, weights=x.production)).reset_index().rename(columns={0: "electrical_capacity"})
         else:
             df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").agg({metric: 'sum'}).reset_index()
     else:
         if metric == "capacity usage":
-            df_source = df[(df["energy_source_level_2"] == source1) & (df["energy_source_level_3"] == source2)].groupby("kan_name").apply(lambda x: np.average(df["electrical_capacity"], weights=df['production'])).reset_index()
+            df_source = df[(df["energy_source_level_2"] == source1) & (df["energy_source_level_3"] == source2)].groupby("kan_name").apply(lambda x: np.average(x.electrical_capacity, weights=x.production)).reset_index().rename(columns={0: "electrical_capacity"})
         else:
             df_source = df[(df["energy_source_level_2"] == source1) & (df["energy_source_level_3"] == source2)].groupby("kan_name").agg({metric: 'sum'}).reset_index()
 else:
     if metric == "capacity usage":
-        df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").apply(lambda x: np.average(df["electrical_capacity"], weights=df['production'])).reset_index()
+        df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").apply(lambda x: np.average(x.electrical_capacity, weights=x.production])).reset_index().rename(columns={0: "electrical_capacity"})
     else:
         df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").agg({metric: 'sum'}).reset_index()
 
