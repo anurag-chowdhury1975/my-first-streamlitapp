@@ -66,7 +66,7 @@ show_data = st.checkbox(label="Include data table with visual")
 
 left_column, middle_column, right_column = st.columns([1,1,1])
 
-metric = left_column.radio(label='Show Class Means', options=['production','tariff','capacity usage'])
+metric = left_column.radio(label='Show Class Means', options=['production','tariff','electrical_capacity'])
 
 sources1 = ["All sources"]+sorted(pd.unique(df["energy_source_level_2"]))
 source1 = middle_column.selectbox(label="Select an energy source", options=sources1)
@@ -96,7 +96,7 @@ else:
 
 st.subheader("Energy production map:")
 fig = px.choropleth_mapbox(df_source, geojson=geojson, 
-                        color="production",
+                        color=metric,
                         locations="kan_name", featureidkey="properties.kan_name",
                         center={"lat": 47.0, "lon": 8.0},
                         mapbox_style="carto-positron", zoom=6.5)
