@@ -77,7 +77,7 @@ source2 = right_column.selectbox(label="Source type", options=sources2)
 
 if source1 == "All sources":
     df_source = df.groupby("kan_name").agg({metric: 'sum'}).reset_index()
-elif source1 == "Bioenergy"::
+elif source1 == "Bioenergy":
     if source2 == "All types":
         if metric == "capacity usage":
             df_source = df[df["energy_source_level_2"] == source1].groupby("kan_name").apply(lambda x: np.average(df["electrical_capacity"], weights=df['production'])).reset_index()
